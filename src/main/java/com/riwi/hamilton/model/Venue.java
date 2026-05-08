@@ -1,0 +1,19 @@
+package com.riwi.hamilton.model;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Venue {
+    private Long id;
+    @NotBlank(message = "Name can´t to be empty.")
+    @Size(min = 4, max = 30, message = "The name can´t be shorter than 4 or greater than 30.")
+    private String name;
+    @NotBlank(message = "City can´t to be empty.")
+    private String city;
+}
