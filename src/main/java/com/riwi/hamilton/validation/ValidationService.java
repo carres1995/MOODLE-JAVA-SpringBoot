@@ -1,25 +1,33 @@
 package com.riwi.hamilton.validation;
 
-import java.util.List;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.function.Function;
+
+@Component
 public class ValidationService <T>{
 
-    public boolean idExist(Long id){
+    public void idExist(Long id){
         if(id == null){
             throw new IllegalArgumentException("Id can´t be null");
         }
-        return false;
     }
-    public boolean ObjectExist(T object){
+    public void ObjectExist(T object){
         if(object == null){
             throw new IllegalArgumentException("Object not added.");
         }
-        return false;
     }
-    public boolean ListValidation(List<T> lista) {
+    public void ListValidation(List<T> lista) {
         if (lista == null || lista.isEmpty()) {
             throw new IllegalArgumentException("The list is empty or null.");
         }
-        return true;
+
+    }
+    public void uniqueId(Long id, List<T> list, Function<T,Long> extractId){
+        boolean exist = list.stream().anyMatch(i -> extractId.apply(i).equals(id));
+        if(exist){
+            throw new IllegalArgumentException("Id already exists");
+        }
     }
 }

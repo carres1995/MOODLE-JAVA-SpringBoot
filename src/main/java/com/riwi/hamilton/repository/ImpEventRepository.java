@@ -19,15 +19,14 @@ public final class ImpEventRepository implements EventRepository {
 
     @Override
     public List<Event> findAll(){
-        if(validation.ListValidation(events)){
-            return null;
-        }
+        validation.ListValidation(events);
 
         return events;
     }
 
     @Override
     public boolean save(Event event) {
+        validation.uniqueId(event.getId(),events,Event::getId);
         events.add(event);
         return true;
     }

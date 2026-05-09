@@ -23,22 +23,17 @@ public class EventService {
     }
 
     public boolean saveEvent(Event event) {
-        if(validation.ObjectExist(event)){
-            return false;
-        }
+        validation.ObjectExist(event);
         return repository.save(event);
     }
 
     public Optional<Event> getById(Long id){
-        if(validation.idExist(id)){
-            return Optional.empty();
-        }
+        validation.idExist(id);
         return repository.findById(id);
     }
     public boolean update(Long id, Event event){
-        if(validation.idExist(id) && validation.ObjectExist(event)) {
-            return false;
-        }
+        validation.idExist(id);
+        validation.ObjectExist(event);
         return repository.update(id, event);
     }
 
