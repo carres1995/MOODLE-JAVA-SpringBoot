@@ -7,8 +7,11 @@ import java.util.Optional;
 
 public sealed interface EventRepository permits ImpEventRepository {
     List<Event> findAll();
-    boolean save (Event event);
+
+    boolean save(Event event);
+
     Optional<Event> findById(Long id);
-    boolean update(Long id , Event event);
+
+    boolean update(Long id, Event event);
 
 }
