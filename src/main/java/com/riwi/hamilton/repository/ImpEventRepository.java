@@ -2,6 +2,9 @@ package com.riwi.hamilton.repository;
 
 import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.validation.ValidationService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -9,16 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public final class ImpEventRepository implements EventRepository {
-    private final List<Event> events = new ArrayList<>();
+    private List<Event> events = new ArrayList<>();
     private final ValidationService<Event> validation;
-
-    public ImpEventRepository(ValidationService<Event> validation) {
-        this.validation = validation;
-    }
-
+    private Long increment = 1L;
     @Override
-    public List<Event> findAll(){
+    public List<Event> findAll() {
         validation.ListValidation(events);
 
         return events;
@@ -26,7 +26,7 @@ public final class ImpEventRepository implements EventRepository {
 
     @Override
     public boolean save(Event event) {
-        validation.uniqueId(event.getId(),events,Event::getId);
+        validation.uniqueId(event.getId(), events, Event::getId);
         events.add(event);
         return true;
     }
@@ -39,9 +39,9 @@ public final class ImpEventRepository implements EventRepository {
     @Override
     public boolean update(Long id, Event event) {
         return findById(id).map(e -> {
-                    e.setName(event.getName());
-                    e.setDate(event.getDate());
-        return true;
+            e.setName(event.getName());
+            e.setDate(event.getDate());
+            return true;
         }).orElse(false);
     }
 }

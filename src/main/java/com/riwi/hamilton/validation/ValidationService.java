@@ -19,10 +19,9 @@ public class ValidationService <T>{
         }
     }
     public void ListValidation(List<T> lista) {
-        if (lista == null || lista.isEmpty()) {
-            throw new IllegalArgumentException("The list is empty or null.");
+        if (lista == null) {
+            throw new IllegalArgumentException("The list is null.");
         }
-
     }
     public void uniqueId(Long id, List<T> list, Function<T,Long> extractId){
         boolean exist = list.stream().anyMatch(i -> extractId.apply(i).equals(id));

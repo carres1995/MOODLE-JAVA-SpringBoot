@@ -1,6 +1,5 @@
 package com.riwi.hamilton.model;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

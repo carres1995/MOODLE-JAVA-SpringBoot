@@ -3,6 +3,7 @@ package com.riwi.hamilton.repository;
 import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.model.Venue;
 import com.riwi.hamilton.validation.ValidationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -10,13 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public final class ImpVenueRepository implements VenueRepository {
-    private final List<Venue> venues= new ArrayList<>();
+    private List<Venue> venues = new ArrayList<>();
     private final ValidationService<Venue> validation;
-
-    public ImpVenueRepository(ValidationService<Venue> validation) {
-        this.validation = validation;
-    }
 
     @Override
     public List<Venue> findAll() {
@@ -26,7 +24,7 @@ public final class ImpVenueRepository implements VenueRepository {
 
     @Override
     public boolean save(Venue venue) {
-        validation.uniqueId(venue.getId(),venues,Venue::getId);
+        validation.uniqueId(venue.getId(), venues, Venue::getId);
         return venues.add(venue);
     }
 
@@ -37,13 +35,11 @@ public final class ImpVenueRepository implements VenueRepository {
 
     @Override
     public boolean update(Long id, Venue venue) {
-        return findById(id).map(v ->
-                {
-                   v.setName(venue.getName());
-                   v.setCity(venue.getCity());
-                   return true;
-                }
-        ).orElse(false);
+        return findById(id).map(v -> {
+            v.setName(venue.getName());
+            v.setCity(venue.getCity());
+            return true;
+        }).orElse(false);
     }
 
 }
