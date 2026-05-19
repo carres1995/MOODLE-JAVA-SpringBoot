@@ -49,15 +49,17 @@ public class VenueControllerTest {
 
     @Test
     void saveVenues() throws Exception {
-        Venue venue = new Venue(1L, "Riwi", "Medellin");
+        Venue venue = new Venue(null, "Riwi", "Medellin");
+        Venue savedVenue = new Venue(1L, "Riwi", "Medellin");
 
-        when(service.createVenue(any(Venue.class))).thenReturn(true);
+        when(service.createVenue(any(Venue.class))).thenReturn(savedVenue);
 
         mockMvc.perform(post("/venues/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(venue)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Riwi"));
     }
 
     @Test
@@ -75,12 +77,12 @@ public class VenueControllerTest {
     void updateVenue() throws Exception {
         Venue venue = new Venue(1L, "Riwi", "Medellin");
 
-        when(service.update(eq(1L), any(Venue.class))).thenReturn(true);
+        when(service.update(eq(1L), any(Venue.class))).thenReturn(venue);
 
         mockMvc.perform(put("/venues/update/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(venue)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(jsonPath("$.name").value("Riwi"));
     }
 }

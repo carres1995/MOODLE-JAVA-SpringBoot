@@ -1,7 +1,7 @@
 package com.riwi.hamilton.service;
 
 import com.riwi.hamilton.model.Event;
-import com.riwi.hamilton.repository.ImpEventRepository;
+import com.riwi.hamilton.repository.EventRepository;
 import com.riwi.hamilton.validation.ValidationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,14 +12,14 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class EventService {
-    private final ImpEventRepository repository;
+    private final EventRepository repository;
     private final ValidationService<Event> validation;
 
     public List<Event> getAll() {
         return repository.findAll();
     }
 
-    public boolean saveEvent(Event event) {
+    public Event saveEvent(Event event) {
         validation.ObjectExist(event);
         return repository.save(event);
     }
@@ -29,10 +29,24 @@ public class EventService {
         return repository.findById(id);
     }
 
-    public boolean update(Long id, Event event) {
+    public Event update(Long id, Event event) {
         validation.idExist(id);
         validation.ObjectExist(event);
-        return repository.update(id, event);
+        return repository.findById(id).map(existingEvent -> {
+            existingEvent.setName(event.getName());
+            existingEvent.setDate(event.getDate());
+            repository.save(existingEvent);
+            return event;
+        }).orElse(null);
     }
 
+    public boolean delete(Long id) {
+        validation.idExist(id);
+        repository.deleteById(id);
+        return true;
+    }
+
+    public List<Event> search(String name) {
+        return repository.findByNameContaining(name);
+    }
 }
