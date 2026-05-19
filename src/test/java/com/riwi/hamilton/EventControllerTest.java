@@ -84,24 +84,26 @@ public class EventControllerTest {
     @Test
     void testSaveEvent() throws Exception {
         Event event = new Event(null, "Nuevo Evento", "2024-07-20");
-        when(eventService.saveEvent(any(Event.class))).thenReturn(true);
+        Event savedEvent = new Event(1L, "Nuevo Evento", "2024-07-20");
+        when(eventService.saveEvent(any(Event.class))).thenReturn(savedEvent);
 
         mockMvc.perform(post("/events/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(event)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("Nuevo Evento"));
     }
 
     @Test
     void testUpdateEvent() throws Exception {
         Event event = new Event(1L, "Evento Actualizado", "2024-08-10");
-        when(eventService.update(eq(1L), any(Event.class))).thenReturn(true);
+        when(eventService.update(eq(1L), any(Event.class))).thenReturn(event);
 
         mockMvc.perform(put("/events/update/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(event)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("true"));
+                .andExpect(jsonPath("$.name").value("Evento Actualizado"));
     }
 }

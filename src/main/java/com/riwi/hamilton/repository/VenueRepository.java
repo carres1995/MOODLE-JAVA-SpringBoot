@@ -2,16 +2,12 @@ package com.riwi.hamilton.repository;
 
 import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.model.Venue;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public sealed interface VenueRepository permits ImpVenueRepository {
-    List<Venue> findAll();
+public interface VenueRepository extends JpaRepository<Venue, Long> {
+    List<Venue> findByNameContaining(String name);
 
-    boolean save(Venue Venue);
-
-    Optional<Venue> findById(Long id);
-
-    boolean update(Long id, Venue venue);
 }

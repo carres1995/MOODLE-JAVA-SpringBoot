@@ -1,17 +1,12 @@
 package com.riwi.hamilton.repository;
 
 import com.riwi.hamilton.model.Event;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public sealed interface EventRepository permits ImpEventRepository {
-    List<Event> findAll();
-
-    boolean save(Event event);
-
-    Optional<Event> findById(Long id);
-
-    boolean update(Long id, Event event);
+public interface EventRepository extends JpaRepository<Event,Long> {
+    List<Event> findByNameContaining(String name);
 
 }
