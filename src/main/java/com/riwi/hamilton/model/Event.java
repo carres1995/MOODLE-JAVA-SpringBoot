@@ -1,5 +1,6 @@
 package com.riwi.hamilton.model;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -9,11 +10,19 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(name = "Events")
 public class Event {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 150)
     @NotBlank(message = "Name can´t to be empty.")
     @Size(min = 4, max = 30, message = "The name can´t be shorter than 4 or greater than 30.")
     private String name;
+
+    @Column(nullable = false, length = 20)
     @NotBlank(message = "Date can´t be empty")
     private String date;
 }
