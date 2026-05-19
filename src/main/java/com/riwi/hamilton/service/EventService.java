@@ -4,6 +4,8 @@ import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.repository.EventRepository;
 import com.riwi.hamilton.validation.ValidationService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,5 +50,8 @@ public class EventService {
 
     public List<Event> search(String name) {
         return repository.findByNameContaining(name);
+    }
+    public Page<Event> ListEvents(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }

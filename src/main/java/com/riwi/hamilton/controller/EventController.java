@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +74,17 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/page")
+    @Operation(summary = "List by page", description = "Return by size of consult.")
+    public ResponseEntity<Page<Event>> toList(@PageableDefault(size = 10, sort = "name")Pageable pageable){
+        Page<Event> events = service.ListEvents(pageable);
+        if(events.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.ok(events);
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
