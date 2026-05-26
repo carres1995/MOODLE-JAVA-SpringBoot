@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+    <main>
+        <button onclick="openModal()">
+            Open Form events
+        </button>
+        <div id="modal" class="modal">
+            <div class="modal-window">
+                <div th:replace="~{fragment/form :: eventForm}"></div>
+                <button type="button" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+        <div>
+            <h1>Events</h1>
+            <div th:if="${successMessage}" class="alert success">
+                <p th:text="${successMessage}"></p>
+            </div>
+            <div th:if="${events.content.empty}">
+                <p>Actualmente no hay eventos programados.</p>
+            </div>
+            <table border="1" th:unless="${events.content.empty}">
+
+                <thead>
+
+                <tr>
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>City</th>
+                </tr>
+
+                </thead>
+                <tbody>
+
+                <tr th:each="event : ${events.content}">
+                    <td th:text="${event.eventName}"></td>
+                    <td th:text="${event.eventDate}"></td>
+                    <td th:text="${event.venueName}"></td>
+                    <td th:text="${event.city}"></td>
+                </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+    </main>
+    <script>
+
+        function openModal(){
+            document.getElementById("modal").classList.add("open");
+        }
+
+        function closeModal(){
+            document.getElementById("modal").classList.remove("open");
+        }
+
+    </script>
+</body>

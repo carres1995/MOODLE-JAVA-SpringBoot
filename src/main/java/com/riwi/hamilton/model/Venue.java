@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,6 +19,13 @@ public class Venue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToMany(
+            mappedBy = "venue",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Event> events = new ArrayList<>();
 
     @Column(nullable = false, length = 150)
     @NotBlank(message = "Name can´t to be empty.")

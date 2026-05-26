@@ -1,15 +1,20 @@
 package com.riwi.hamilton.service;
 
 import com.riwi.hamilton.model.Event;
+import com.riwi.hamilton.model.dto.EventVenueDTO;
 import com.riwi.hamilton.repository.EventRepository;
 import com.riwi.hamilton.validation.ValidationService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.data.domain.Sort.by;
 
 @Service
 @AllArgsConstructor
@@ -17,8 +22,11 @@ public class EventService {
     private final EventRepository repository;
     private final ValidationService<Event> validation;
 
-    public List<Event> getAll() {
-        return repository.findAll();
+    public Page<EventVenueDTO> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(
+            page, size, Sort.by("name").ascending()
+        );
+        return repository.findEventsWithVenues(pageable);
     }
 
     public Event saveEvent(Event event) {
@@ -54,4 +62,5 @@ public class EventService {
     public Page<Event> ListEvents(Pageable pageable) {
         return repository.findAll(pageable);
     }
+
 }

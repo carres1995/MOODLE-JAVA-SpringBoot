@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="eventForm">
+    <form th:action="@{/admin/events/save}"
+          th:object="${eventForm}"
+          method="post">
+
+        <h2>Event</h2>
+
+        <div>
+            <label>Event Name</label>
+            <input type="text" th:field="*{eventName}">
+        </div>
+
+        <div>
+            <label>Date</label>
+            <input type="date" th:field="*{eventDate}">
+        </div>
+
+        <h2>Venue</h2>
+
+        <div>
+            <label>Venue Name</label>
+            <input type="text" th:field="*{venueName}">
+        </div>
+
+        <div>
+            <label>City</label>
+            <input type="text" th:field="*{city}">
+        </div>
+
+        <button type="submit">
+            Save
+        </button>
+
+    </form>
+</div>
+
+</body>
+</html>
