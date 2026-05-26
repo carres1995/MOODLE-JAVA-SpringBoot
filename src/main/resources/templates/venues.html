@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Venues</title>
+</head>
+<body>
+    <main>
+        <h1>Gestión de Venues</h1>
+        <div th:if="${successMessage}" class="alert success">
+            <p th:text="${successMessage}"></p>
+        </div>
+
+        <section>
+            <h2>Registrar nuevo venue</h2>
+            <form th:action="@{/admin/venues/save}" th:object="${venueForm}" method="post">
+                <div>
+                    <label for="name">Nombre</label>
+                    <input type="text" id="name" th:field="*{name}" />
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></p>
+                </div>
+                <div>
+                    <label for="city">Ciudad</label>
+                    <input type="text" id="city" th:field="*{city}" />
+                    <p th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></p>
+                </div>
+                <button type="submit">Guardar venue</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Listado de Venues</h2>
+            <div th:if="${#lists.isEmpty(venues)}">
+                <p>Actualmente no hay lugares registrados.</p>
+            </div>
+            <table border="1" th:unless="${#lists.isEmpty(venues)}">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Ciudad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="venue : ${venues}">
+                        <td th:text="${venue.name}"></td>
+                        <td th:text="${venue.city}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <p><a th:href="@{/admin/events}">Ir a eventos</a></p>
+    </main>
+</body>
+</html>

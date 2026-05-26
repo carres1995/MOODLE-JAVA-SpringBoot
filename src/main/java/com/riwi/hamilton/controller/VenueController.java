@@ -20,7 +20,7 @@ import java.util.Optional;
 @Tag(description = "CRUD about all logic venues", name = "Venues")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/venues")
+@RequestMapping("/api/venues")
 public class VenueController {
     private final VenueService service;
 

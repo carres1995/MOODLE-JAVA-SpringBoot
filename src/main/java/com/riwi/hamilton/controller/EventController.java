@@ -23,7 +23,7 @@ import java.util.Map;
 @Tag(description = "CRUD about all logic events", name = "Events")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 public class EventController {
 
     private final EventService service;
@@ -35,11 +35,11 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
 
-    @GetMapping("/")
-    @Operation(summary = "Get all events", description = "Return all registered events with status 200 OK")
-    public ResponseEntity<List<Event>> getAll() {
-        return ResponseEntity.ok(service.getAll());
-    }
+//    @GetMapping("/")
+//    @Operation(summary = "Get all events", description = "Return all registered events with status 200 OK")
+//    public ResponseEntity<List<Event>> getAll() {
+//        return ResponseEntity.ok(service.getAll());
+//    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get the Id enter", description = "Return the event entered by id or 404 Not Found")
