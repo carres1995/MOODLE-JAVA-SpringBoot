@@ -6,6 +6,7 @@ import com.riwi.hamilton.service.EventService;
 import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.model.Venue;
 import com.riwi.hamilton.service.VenueService;
+import com.riwi.hamilton.utils.Cities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -48,7 +49,7 @@ class EventUIControllerTest {
     void setUp() {
         // Setup mock data - handle any arguments
         List<EventVenueDTO> eventList = new ArrayList<>();
-        eventList.add(new EventVenueDTO("Event 1", "2026-06-01", "Venue 1", "City 1"));
+        eventList.add(new EventVenueDTO("Event 1", "2026-06-01", "Venue 1", Cities.BOGOTA));
         Page<EventVenueDTO> eventPage = new PageImpl<>(eventList, Pageable.ofSize(5), 1);
         
         Mockito.when(eventService.getAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(eventPage);

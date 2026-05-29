@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,14 +18,16 @@ import java.util.Optional;
 import static org.springframework.data.domain.Sort.by;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class EventService {
     private final EventRepository repository;
     private final ValidationService<Event> validation;
 
+    @Transactional(readOnly = true)
     public Page<EventVenueDTO> getAll(int page, int size) {
-        Pageable pageable = PageRequest.of(
-            page, size, Sort.by("name").ascending()
+        final Pageable pageable = PageRequest.of(
+                page, size, Sort.by("name").ascending()
         );
         return repository.findEventsWithVenues(pageable);
     }
@@ -34,6 +37,7 @@ public class EventService {
         return repository.save(event);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Event> getById(Long id) {
         validation.idExist(id);
         return repository.findById(id);
@@ -50,17 +54,19 @@ public class EventService {
         }).orElse(null);
     }
 
-    public boolean delete(Long id) {
+    public boolean softDelete(Long id) {
         validation.idExist(id);
         repository.deleteById(id);
         return true;
     }
 
+    @Transactional(readOnly = true)
     public List<Event> search(String name) {
         return repository.findByNameContaining(name);
     }
+
+    @Transactional(readOnly = true)
     public Page<Event> ListEvents(Pageable pageable) {
         return repository.findAll(pageable);
     }
-
 }

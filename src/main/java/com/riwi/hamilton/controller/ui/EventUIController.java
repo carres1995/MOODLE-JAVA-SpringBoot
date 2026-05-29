@@ -2,10 +2,10 @@ package com.riwi.hamilton.controller.ui;
 
 import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.model.Venue;
-import com.riwi.hamilton.model.dto.EventForm;
 import com.riwi.hamilton.model.dto.EventVenueDTO;
 import com.riwi.hamilton.service.EventService;
 import com.riwi.hamilton.service.VenueService;
+import com.riwi.hamilton.utils.Cities;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +35,7 @@ public class EventUIController {
         model.addAttribute("events", events);
         model.addAttribute("page", page);
         model.addAttribute("size", size);
-        model.addAttribute("eventForm", new EventVenueDTO("", "", "", ""));
+        model.addAttribute("eventForm", new EventVenueDTO("", "", "", Cities.BOGOTA));
         model.addAttribute("venues", venueService.findAllVenues());
         return "events";
     }

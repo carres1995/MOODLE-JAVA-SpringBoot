@@ -1,5 +1,6 @@
 package com.riwi.hamilton.model.dto;
 
+import com.riwi.hamilton.utils.Cities;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -10,7 +11,7 @@ public class VenueForm {
     private String name;
 
     @NotBlank(message = "La ciudad no puede estar vacía.")
-    private String city;
+    private Cities city;
 
     public VenueForm() {
     }
@@ -23,11 +24,11 @@ public class VenueForm {
         this.name = name;
     }
 
-    public String getCity() {
+    public Cities getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(Cities city) {
         this.city = city;
     }
 }

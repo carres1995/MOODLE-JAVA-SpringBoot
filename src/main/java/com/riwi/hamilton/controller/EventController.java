@@ -31,7 +31,7 @@ public class EventController {
     @PostMapping("/")
     @Operation(summary = "Save event", description = "Returns 201 Created and the registered event")
     public ResponseEntity<Event> save(@Valid @RequestBody Event event) {
-        Event savedEvent = service.saveEvent(event);
+        final Event savedEvent = service.saveEvent(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
 
@@ -68,11 +68,14 @@ public class EventController {
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete a event", description = "Return true if the event exist")
     public ResponseEntity<Boolean> deleteEvent(@PathVariable Long id) {
-        if (service.delete(id)) {
+        if (service.softDelete(id)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    public void metodoRoto() {
+        int x = "esto no es un número"; // ERROR de compilación
     }
 
     @GetMapping("/page")

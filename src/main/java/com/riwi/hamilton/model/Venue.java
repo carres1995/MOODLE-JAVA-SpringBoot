@@ -1,5 +1,6 @@
 package com.riwi.hamilton.model;
 
+import com.riwi.hamilton.utils.Cities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -32,7 +33,8 @@ public class Venue {
     @Size(min = 4, max = 30, message = "The name can´t be shorter than 4 or greater than 30.")
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 150)
     @NotBlank(message = "City can´t to be empty.")
-    private String city;
+    private Cities city;
 }
