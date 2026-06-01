@@ -3,6 +3,7 @@ package com.riwi.hamilton;
 import com.riwi.hamilton.controller.ui.VenueUIController;
 import com.riwi.hamilton.model.Venue;
 import com.riwi.hamilton.service.VenueService;
+import com.riwi.hamilton.utils.Cities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,7 +42,7 @@ class VenueUIControllerTest {
         Venue venue = new Venue();
         venue.setId(1L);
         venue.setName("Test Venue");
-        venue.setCity("Test City");
+        venue.setCity(Cities.BOGOTA);
         venueList.add(venue);
         
         Mockito.when(venueService.findAllVenues()).thenReturn(venueList);
@@ -95,7 +96,7 @@ class VenueUIControllerTest {
 
         mockMvc.perform(post("/admin/venues/save")
                 .param("name", "Nuevo Lugar")
-                .param("city", "Ciudad Ejemplo"))
+                .param("city", "BOGOTA"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/venues"));
     }
