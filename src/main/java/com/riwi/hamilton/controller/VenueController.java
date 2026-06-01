@@ -4,6 +4,8 @@ import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.model.Venue;
 import com.riwi.hamilton.service.VenueService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ public class VenueController {
     private final VenueService service;
 
     @GetMapping("/")
-    @Operation(summary = "Get all venues", description = "Return all registered venues")
+    @Operation(summary = "Get all venues", description = "Return all registered venues. Soft-deleted venues are excluded from the response.")
     public ResponseEntity<List<Venue>> getAll() {
         List<Venue> list = service.findAllVenues();
         return ResponseEntity.ok(list);
@@ -63,7 +65,11 @@ public class VenueController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Operation(summary = "Delete a event", description = "Return true if the vebue exist")
+    @Operation(summary = "Soft-delete a venue", description = "Soft-deletes a venue by marking it unavailable. Soft-deleted venues are excluded from future list and search results.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Venue successfully soft-deleted"),
+            @ApiResponse(responseCode = "404", description = "Venue not found")
+    })
     public ResponseEntity<Boolean> deleteEvent(@PathVariable Long id) {
         if (service.delete(id)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

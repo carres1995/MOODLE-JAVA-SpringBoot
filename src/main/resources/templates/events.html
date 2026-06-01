@@ -21,33 +21,65 @@
             <div th:if="${successMessage}" class="alert success">
                 <p th:text="${successMessage}"></p>
             </div>
+
+            <section class="filter-panel">
+                <form method="get" th:action="@{/admin/events}">
+                    <div>
+                        <label for="city">City</label>
+                        <input id="city" type="text" name="city" th:value="${city}" placeholder="Partial city name" />
+                    </div>
+                    <div>
+                        <label for="category">Category</label>
+                        <input id="category" type="text" name="category" th:value="${category}" placeholder="Partial category name" />
+                    </div>
+                    <div>
+                        <label for="startDate">From</label>
+                        <input id="startDate" type="date" name="startDate" th:value="${startDate}" />
+                    </div>
+                    <div>
+                        <label for="endDate">To</label>
+                        <input id="endDate" type="date" name="endDate" th:value="${endDate}" />
+                    </div>
+                    <button type="submit">Filter</button>
+                </form>
+            </section>
+
             <div th:if="${events.content.empty}">
                 <p>Actualmente no hay eventos programados.</p>
             </div>
             <table border="1" th:unless="${events.content.empty}">
 
                 <thead>
-
                 <tr>
                     <th>Event</th>
                     <th>Date</th>
                     <th>Venue</th>
                     <th>City</th>
+                    <th>Categories</th>
                 </tr>
-
                 </thead>
                 <tbody>
-
                 <tr th:each="event : ${events.content}">
                     <td th:text="${event.eventName}"></td>
                     <td th:text="${event.eventDate}"></td>
                     <td th:text="${event.venueName}"></td>
                     <td th:text="${event.city}"></td>
+                    <td th:text="${event.categories}"></td>
                 </tr>
-
                 </tbody>
             </table>
 
+            <div class="pagination" th:unless="${events.content.empty}">
+                <a th:if="${page > 0}"
+                   th:href="@{/admin/events(page=${page - 1}, city=${city}, category=${category}, startDate=${startDate}, endDate=${endDate})}">
+                    Previous
+                </a>
+                <span>Page <span th:text="${page + 1}"></span></span>
+                <a th:if="${events.hasNext}"
+                   th:href="@{/admin/events(page=${page + 1}, city=${city}, category=${category}, startDate=${startDate}, endDate=${endDate})}">
+                    Next
+                </a>
+            </div>
         </div>
     </main>
     <script>

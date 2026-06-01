@@ -8,6 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,6 +34,14 @@ public class Event {
     @NotNull(message = "Id Venue can´t be empty")
     @JoinColumn(name = "id_venue")
     private Venue venue;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "events_categories",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
 
     @Column(nullable = false, length = 20)
     @NotBlank(message = "Date can´t be empty")

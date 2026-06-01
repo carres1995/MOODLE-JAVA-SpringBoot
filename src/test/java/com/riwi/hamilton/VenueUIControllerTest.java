@@ -96,7 +96,7 @@ class VenueUIControllerTest {
 
         mockMvc.perform(post("/admin/venues/save")
                 .param("name", "Nuevo Lugar")
-                .param("city", "Ciudad Ejemplo"))
+                .param("city", "BOGOTA"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/venues"));
     }
