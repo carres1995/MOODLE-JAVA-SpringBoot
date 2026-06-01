@@ -22,13 +22,24 @@
         <h2>Venue</h2>
 
         <div>
-            <label>Venue Name</label>
-            <input type="text" th:field="*{venueName}">
+            <label>Venue</label>
+            <select th:field="*{venueId}">
+                <option value="" disabled selected>Selecciona un venue</option>
+                <option th:each="venue : ${venues}"
+                        th:value="${venue.id}"
+                        th:text="${venue.name} + ' - ' + ${venue.city}">
+                </option>
+            </select>
         </div>
 
         <div>
-            <label>City</label>
-            <input type="text" th:field="*{city}">
+            <label>Categorías</label>
+            <div th:each="category : ${categories}">
+                <label>
+                    <input type="checkbox" th:field="*{categoryIds}" th:value="${category.id}">
+                    <span th:text="${category.name}"></span>
+                </label>
+            </div>
         </div>
 
         <button type="submit">

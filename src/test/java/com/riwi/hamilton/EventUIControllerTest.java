@@ -2,10 +2,12 @@ package com.riwi.hamilton;
 
 import com.riwi.hamilton.controller.ui.EventUIController;
 import com.riwi.hamilton.model.dto.EventVenueDTO;
+import com.riwi.hamilton.service.CategoryService;
 import com.riwi.hamilton.service.EventService;
 import com.riwi.hamilton.model.Event;
 import com.riwi.hamilton.model.Venue;
 import com.riwi.hamilton.service.VenueService;
+import com.riwi.hamilton.utils.Cities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -44,15 +46,19 @@ class EventUIControllerTest {
     @MockBean
     private VenueService venueService;
 
+    @MockBean
+    private CategoryService categoryService;
+
     @BeforeEach
     void setUp() {
         // Setup mock data - handle any arguments
         List<EventVenueDTO> eventList = new ArrayList<>();
-        eventList.add(new EventVenueDTO("Event 1", "2026-06-01", "Venue 1", "City 1"));
+        eventList.add(new EventVenueDTO("Event 1", "2026-06-01", "Venue 1", Cities.BOGOTA, List.of("Sports"), 1L, List.of(1L)));
         Page<EventVenueDTO> eventPage = new PageImpl<>(eventList, Pageable.ofSize(5), 1);
         
-        Mockito.when(eventService.getAll(Mockito.anyInt(), Mockito.anyInt())).thenReturn(eventPage);
+        Mockito.when(eventService.getAll(Mockito.anyInt())).thenReturn(eventPage);
         Mockito.when(venueService.findAllVenues()).thenReturn(new ArrayList<>());
+        Mockito.when(categoryService.findAllCategories()).thenReturn(new ArrayList<>());
     }
 
     @Test
@@ -106,14 +112,15 @@ class EventUIControllerTest {
 
     @Test
     void testSaveEventRedirectsAfterSuccessfulSubmit() throws Exception {
-        Mockito.when(venueService.createVenue(Mockito.any(Venue.class))).thenReturn(new Venue());
+        Mockito.when(venueService.getById(Mockito.anyLong())).thenReturn(java.util.Optional.of(new Venue()));
+        Mockito.when(categoryService.findAllByIds(Mockito.anyList())).thenReturn(new ArrayList<>());
         Mockito.when(eventService.saveEvent(Mockito.any(Event.class))).thenReturn(new Event());
 
         mockMvc.perform(post("/admin/events/save")
                 .param("eventName", "Test Event")
                 .param("eventDate", "2026-06-01")
-                .param("venueName", "Test Venue")
-                .param("city", "Test City"))
+                .param("venueId", "1")
+                .param("categoryIds", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/events"));
     }
