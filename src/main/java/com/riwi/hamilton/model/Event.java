@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,18 +22,16 @@ import java.util.Set;
         columnName = "available",
         strategy = SoftDeleteType.ACTIVE)
 @Table(name = "Events")
+@SQLRestriction("available = true")
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 150)
-    @NotBlank(message = "Name can´t to be empty.")
-    @Size(min = 4, max = 30, message = "The name can´t be shorter than 4 or greater than 30.")
     private String name;
 
     @ManyToOne
-    @NotNull(message = "Id Venue can´t be empty")
     @JoinColumn(name = "id_venue")
     private Venue venue;
 
@@ -44,6 +44,5 @@ public class Event {
     private Set<Category> categories = new HashSet<>();
 
     @Column(nullable = false, length = 20)
-    @NotBlank(message = "Date can´t be empty")
-    private String date;
+    private LocalDate date;
 }

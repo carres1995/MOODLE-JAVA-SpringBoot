@@ -1,96 +1,248 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Events</title>
-    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/styles.css"/>
 </head>
+
 <body>
-    <main>
-        <button onclick="openModal()">
-            Open Form events
-        </button>
-        <div id="modal" class="modal">
-            <div class="modal-window">
-                <div th:replace="~{fragment/form :: eventForm}"></div>
-                <button type="button" onclick="closeModal()">Close</button>
-            </div>
+
+<main>
+
+    <button onclick="openModal()">
+        Open Form events
+    </button>
+
+    <div id="modal" class="modal">
+        <div class="modal-window">
+
+            <div th:replace="~{fragment/form :: eventForm}"></div>
+
+            <button
+                    type="button"
+                    onclick="closeModal()">
+                Close
+            </button>
+
         </div>
-        <div>
-            <h1>Events</h1>
-            <div th:if="${successMessage}" class="alert success">
-                <p th:text="${successMessage}"></p>
-            </div>
+    </div>
 
-            <section class="filter-panel">
-                <form method="get" th:action="@{/admin/events}">
-                    <div>
-                        <label for="city">City</label>
-                        <input id="city" type="text" name="city" th:value="${city}" placeholder="Partial city name" />
-                    </div>
-                    <div>
-                        <label for="category">Category</label>
-                        <input id="category" type="text" name="category" th:value="${category}" placeholder="Partial category name" />
-                    </div>
-                    <div>
-                        <label for="startDate">From</label>
-                        <input id="startDate" type="date" name="startDate" th:value="${startDate}" />
-                    </div>
-                    <div>
-                        <label for="endDate">To</label>
-                        <input id="endDate" type="date" name="endDate" th:value="${endDate}" />
-                    </div>
-                    <button type="submit">Filter</button>
-                </form>
-            </section>
+    <div>
 
-            <div th:if="${events.content.empty}">
-                <p>Actualmente no hay eventos programados.</p>
-            </div>
-            <table border="1" th:unless="${events.content.empty}">
+        <h1>Events</h1>
 
-                <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Date</th>
-                    <th>Venue</th>
-                    <th>City</th>
-                    <th>Categories</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="event : ${events.content}">
-                    <td th:text="${event.eventName}"></td>
-                    <td th:text="${event.eventDate}"></td>
-                    <td th:text="${event.venueName}"></td>
-                    <td th:text="${event.city}"></td>
-                    <td th:text="${event.categories}"></td>
-                </tr>
-                </tbody>
-            </table>
+        <div
+                th:if="${successMessage}"
+                class="alert success">
 
-            <div class="pagination" th:unless="${events.content.empty}">
-                <a th:if="${page > 0}"
-                   th:href="@{/admin/events(page=${page - 1}, city=${city}, category=${category}, startDate=${startDate}, endDate=${endDate})}">
-                    Previous
-                </a>
-                <span>Page <span th:text="${page + 1}"></span></span>
-                <a th:if="${events.hasNext}"
-                   th:href="@{/admin/events(page=${page + 1}, city=${city}, category=${category}, startDate=${startDate}, endDate=${endDate})}">
-                    Next
-                </a>
-            </div>
+            <p th:text="${successMessage}"></p>
+
         </div>
-    </main>
-    <script>
 
-        function openModal(){
-            document.getElementById("modal").classList.add("open");
+        <section class="filter-panel">
+
+            <form
+                    method="get"
+                    th:action="@{/admin/events}">
+
+                <div>
+                    <label for="city">City</label>
+
+                    <input
+                            id="city"
+                            type="text"
+                            name="city"
+                            th:value="${city}">
+                </div>
+
+                <div>
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <input
+                            id="category"
+                            type="text"
+                            name="category"
+                            th:value="${category}">
+
+                </div>
+
+                <div>
+
+                    <label for="startDate">
+                        From
+                    </label>
+
+                    <input
+                            id="startDate"
+                            type="date"
+                            name="startDate"
+                            th:value="${startDate}">
+
+                </div>
+
+                <div>
+
+                    <label for="endDate">
+                        To
+                    </label>
+
+                    <input
+                            id="endDate"
+                            type="date"
+                            name="endDate"
+                            th:value="${endDate}">
+
+                </div>
+
+                <button type="submit">
+                    Filter
+                </button>
+
+            </form>
+
+        </section>
+
+        <div
+                th:if="${events == null or events.content.empty}">
+
+            <p>
+                Actualmente no hay eventos programados.
+            </p>
+
+        </div>
+
+        <table
+                border="1"
+                th:unless="${events == null or events.content.empty}">
+
+            <thead>
+
+            <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Venue</th>
+                <th>Description</th>
+                <th>Categories</th>
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr
+                    th:each="event : ${events.content}">
+
+                <td
+                        th:text="${event.name}">
+                </td>
+
+                <td
+                        th:text="${event.date}">
+                </td>
+
+                <td
+                        th:text="${event.venueName}">
+                </td>
+
+                <td
+                        th:text="${event.description}">
+                </td>
+
+                <td
+                        th:text="${event.categoryNames}">
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+        <div
+                class="pagination"
+                th:unless="${events == null or events.content.empty}">
+
+            <a
+                    th:if="${page > 0}"
+                    th:href="@{/admin/events(
+                        page=${page - 1},
+                        city=${city},
+                        category=${category},
+                        startDate=${startDate},
+                        endDate=${endDate}
+                    )}">
+
+                Previous
+
+            </a>
+
+            <span>
+
+                Page
+
+                <span
+                        th:text="${page + 1}">
+                </span>
+
+            </span>
+
+            <a
+                    th:if="${events.hasNext}"
+                    th:href="@{/admin/events(
+                        page=${page + 1},
+                        city=${city},
+                        category=${category},
+                        startDate=${startDate},
+                        endDate=${endDate}
+                    )}">
+
+                Next
+
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script>
+
+    function openModal() {
+        document
+            .getElementById("modal")
+            .classList
+            .add("open");
+    }
+
+    function closeModal() {
+        document
+            .getElementById("modal")
+            .classList
+            .remove("open");
+    }
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const shouldOpen =
+                [[${openEventForm}]];
+
+            if (shouldOpen) {
+                openModal();
+            }
+
         }
+    );
 
-        function closeModal(){
-            document.getElementById("modal").classList.remove("open");
-        }
+</script>
 
-    </script>
 </body>
+
+</html>

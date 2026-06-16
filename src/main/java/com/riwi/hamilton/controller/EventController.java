@@ -1,10 +1,10 @@
 package com.riwi.hamilton.controller;
 
-import com.riwi.hamilton.model.Event;
-import com.riwi.hamilton.model.Venue;
-import com.riwi.hamilton.model.dto.EventVenueDTO;
+import com.riwi.hamilton.model.dto.req.EventCreateDTO;
+import com.riwi.hamilton.model.dto.req.EventUpdateDTO;
+import com.riwi.hamilton.model.dto.res.EventResDTO;
 import com.riwi.hamilton.service.EventService;
-import com.riwi.hamilton.utils.Cities;
+import com.riwi.hamilton.validation.groups.CreateGroup;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +37,8 @@ public class EventController {
 
     @PostMapping("/")
     @Operation(summary = "Save event", description = "Returns 201 Created and the registered event")
-    public ResponseEntity<Event> save(@Valid @RequestBody Event event) {
-        final Event savedEvent = service.saveEvent(event);
+    public ResponseEntity<EventResDTO> save(@Valid @RequestBody @Validated(CreateGroup.class) EventCreateDTO event) {
+        final EventResDTO savedEvent = service.saveEvent(event);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
 
@@ -47,7 +48,7 @@ public class EventController {
             @Parameter(description = "Page number to return, zero-based")
             @RequestParam(defaultValue = "0") int page
     ) {
-        final Slice<EventVenueDTO> slice = service.getAll(page);
+        final Slice<EventResDTO> slice = service.getAll(page);
         final Map<String, Object> response = new HashMap<>();
         response.put("events", slice.getContent());
         response.put("currentPage", slice.getNumber());
@@ -79,7 +80,7 @@ public class EventController {
             return ResponseEntity.badRequest().body(Map.of("error", "Both startDate and endDate are required for date range filtering."));
         }
 
-        final Slice<EventVenueDTO> slice;
+        final Slice<EventResDTO> slice;
         if (city != null && !city.isBlank() && category != null && !category.isBlank()) {
             slice = service.searchByCityAndCategory(city, category, page);
         } else if (city != null && !city.isBlank()) {
@@ -103,21 +104,19 @@ public class EventController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get the Id enter", description = "Return the event entered by id or 404 Not Found")
-    public ResponseEntity<Event> getById(@PathVariable Long id) {
-        return service.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<EventResDTO> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getById(id));
     }
     @GetMapping("/search/{name}")
     @Operation(summary = "Search events by partial name", description = "Return events whose name contains the given text")
-    public ResponseEntity<List<Event>> search(@PathVariable String name) {
+    public ResponseEntity<List<EventResDTO>> search(@PathVariable String name) {
         return ResponseEntity.ok(service.search(name));
     }
 
     @PutMapping("/update/{id}")
     @Operation(summary = "Update an event", description = "Return the updated event or 404 Not Found")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @Valid @RequestBody Event event) {
-        Event updatedEvent = service.update(id, event);
+    public ResponseEntity<EventResDTO> updateEvent(@PathVariable Long id, @Valid @RequestBody EventUpdateDTO event) {
+        EventResDTO updatedEvent = service.update(id, event);
         if (updatedEvent != null) {
             return ResponseEntity.ok(updatedEvent);
         } else {
@@ -142,8 +141,8 @@ public class EventController {
 
     @GetMapping("/page")
     @Operation(summary = "List by page", description = "Return by size of consult.")
-    public ResponseEntity<Page<Event>> toList(@PageableDefault(size = 10, sort = "name")Pageable pageable){
-        Page<Event> events = service.ListEvents(pageable);
+    public ResponseEntity<Page<EventResDTO>> toList(@PageableDefault(size = 10, sort = "name")Pageable pageable){
+        Page<EventResDTO> events = service.ListEvents(pageable);
         if(events.isEmpty()){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }

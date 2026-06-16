@@ -1,45 +1,116 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
 <body>
 
 <div th:fragment="eventForm">
+
     <form th:action="@{/admin/events/save}"
           th:object="${eventForm}"
           method="post">
 
+        <div th:if="${errorMessage != null}"
+             class="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 mb-4 rounded-r-sm shadow-xs"
+             role="alert">
+            <span class="font-bold">Error de negocio:</span>
+            <span th:text="${errorMessage}" class="text-sm"></span>
+        </div>
+
+        <div th:if="${successMessage != null}"
+             class="bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 p-4 mb-4 rounded-r-sm shadow-xs"
+             role="alert">
+            <span class="font-bold">¡Logrado!</span>
+            <span th:text="${successMessage}" class="text-sm"></span>
+        </div>
+
         <h2>Event</h2>
+
+        <div th:if="${#fields.hasAnyErrors()}">
+            <ul>
+                <li th:each="err : ${#fields.errors('*')}" th:text="${err}"></li>
+            </ul>
+        </div>
 
         <div>
             <label>Event Name</label>
-            <input type="text" th:field="*{eventName}">
+            <input type="text"
+                   th:field="*{name}" placeholder="iniciar con EVENT-">
+            <span
+                    th:if="${#fields.hasErrors('name')}"
+                    th:errors="*{name}">
+            </span>
         </div>
 
         <div>
             <label>Date</label>
-            <input type="date" th:field="*{eventDate}">
+            <input type="date"
+                   th:field="*{date}">
+            <span
+                    th:if="${#fields.hasErrors('date')}"
+                    th:errors="*{date}">
+            </span>
+        </div>
+
+        <div>
+            <label>Description</label>
+            <input type="text"
+                   th:field="*{description}">
+            <span
+                    th:if="${#fields.hasErrors('description')}"
+                    th:errors="*{description}">
+
+            </span>
         </div>
 
         <h2>Venue</h2>
 
         <div>
             <label>Venue</label>
+
             <select th:field="*{venueId}">
-                <option value="" disabled selected>Selecciona un venue</option>
-                <option th:each="venue : ${venues}"
+                <option value="">
+                    Selecciona un venue
+                </option>
+
+                <option
+                        th:each="venue : ${venues}"
                         th:value="${venue.id}"
-                        th:text="${venue.name} + ' - ' + ${venue.city}">
+                        th:text="${venue.name + ' - ' + venue.city}">
                 </option>
             </select>
+            <span
+                    th:if="${#fields.hasErrors('venueId')}"
+                    th:errors="*{venueId}">
+            </span>
         </div>
 
         <div>
+
             <label>Categorías</label>
-            <div th:each="category : ${categories}">
+
+            <div
+                    th:each="category : ${categories}">
+
                 <label>
-                    <input type="checkbox" th:field="*{categoryIds}" th:value="${category.id}">
-                    <span th:text="${category.name}"></span>
+
+                    <input
+                            type="checkbox"
+                            th:field="*{categoriesId}"
+                            th:value="${category.id}">
+
+                    <span
+                            th:text="${category.name}">
+                    </span>
                 </label>
+
             </div>
+            <span
+                    th:if="${#fields.hasErrors('categoriesId')}"
+                    th:errors="*{categoriesId}">
+            </span>
+
         </div>
 
         <button type="submit">
@@ -47,6 +118,7 @@
         </button>
 
     </form>
+
 </div>
 
 </body>

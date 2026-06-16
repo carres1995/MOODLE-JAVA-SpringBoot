@@ -1,39 +1,37 @@
 package com.riwi.hamilton;
 
 import com.riwi.hamilton.controller.ui.EventUIController;
-import com.riwi.hamilton.model.dto.EventVenueDTO;
+import com.riwi.hamilton.model.dto.req.EventCreateDTO;
+import com.riwi.hamilton.model.dto.res.EventResDTO;
 import com.riwi.hamilton.service.CategoryService;
 import com.riwi.hamilton.service.EventService;
-import com.riwi.hamilton.model.Event;
-import com.riwi.hamilton.model.Venue;
 import com.riwi.hamilton.service.VenueService;
-import com.riwi.hamilton.utils.Cities;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+
+import static org.mockito.Mockito.*;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * MockMvc tests for EventUIController (/admin/events routes)
- * Verifies:
- * - HTTP status 200 OK
- * - Correct view name ("events")
- * - Expected model attributes (eventForm, venues, events)
- */
 @WebMvcTest(EventUIController.class)
 class EventUIControllerTest {
 
@@ -41,7 +39,7 @@ class EventUIControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private EventService eventService;
+    private EventService service;
 
     @MockBean
     private VenueService venueService;
@@ -49,80 +47,200 @@ class EventUIControllerTest {
     @MockBean
     private CategoryService categoryService;
 
-    @BeforeEach
-    void setUp() {
-        // Setup mock data - handle any arguments
-        List<EventVenueDTO> eventList = new ArrayList<>();
-        eventList.add(new EventVenueDTO("Event 1", "2026-06-01", "Venue 1", Cities.BOGOTA, List.of("Sports"), 1L, List.of(1L)));
-        Page<EventVenueDTO> eventPage = new PageImpl<>(eventList, Pageable.ofSize(5), 1);
-        
-        Mockito.when(eventService.getAll(Mockito.anyInt())).thenReturn(eventPage);
-        Mockito.when(venueService.findAllVenues()).thenReturn(new ArrayList<>());
-        Mockito.when(categoryService.findAllCategories()).thenReturn(new ArrayList<>());
+    private Slice<EventResDTO> buildSlice() {
+        EventResDTO dto = mock(EventResDTO.class);
+
+        return new SliceImpl<>(
+                List.of(dto),
+                PageRequest.of(0, 5),
+                false
+        );
     }
 
     @Test
-    void testShowEventsReturns200OK() throws Exception {
+    @DisplayName("Debe listar todos los eventos sin filtros")
+    void shouldShowAllEvents() throws Exception {
+
+        when(service.getAll(0))
+                .thenReturn(buildSlice());
+
         mockMvc.perform(get("/admin/events"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(view().name("events"))
+                .andExpect(model().attributeExists("events"))
+                .andExpect(model().attributeExists("eventForm"))
+                .andExpect(model().attributeExists("venues"))
+                .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attributeExists("cities"));
+
+        verify(service).getAll(0);
     }
 
     @Test
-    void testShowEventsReturnsCorrectViewName() throws Exception {
-        mockMvc.perform(get("/admin/events"))
+    @DisplayName("Debe buscar por ciudad y categoría")
+    void shouldSearchByCityAndCategory() throws Exception {
+
+        when(service.searchByCityAndCategory(
+                "Medellin",
+                "Music",
+                0
+        )).thenReturn(buildSlice());
+
+        mockMvc.perform(
+                        get("/admin/events")
+                                .param("city", "Medellin")
+                                .param("category", "Music")
+                )
+                .andExpect(status().isOk())
                 .andExpect(view().name("events"));
+
+        verify(service)
+                .searchByCityAndCategory(
+                        "Medellin",
+                        "Music",
+                        0
+                );
     }
 
     @Test
-    void testShowEventsContainsEventFormAttribute() throws Exception {
-        mockMvc.perform(get("/admin/events"))
-                .andExpect(model().attributeExists("eventForm"));
-    }
+    @DisplayName("Debe buscar solo por ciudad")
+    void shouldSearchByCity() throws Exception {
 
-    @Test
-    void testShowEventsContainsEventsAttribute() throws Exception {
-        mockMvc.perform(get("/admin/events"))
-                .andExpect(model().attributeExists("events"));
-    }
+        when(service.searchByCity(
+                "Bogota",
+                0
+        )).thenReturn(buildSlice());
 
-    @Test
-    void testShowEventsContainsVenuesAttribute() throws Exception {
-        mockMvc.perform(get("/admin/events"))
-                .andExpect(model().attributeExists("venues"));
-    }
-
-    @Test
-    void testShowEventsWithPaginationParametersReturns200OK() throws Exception {
-        mockMvc.perform(get("/admin/events").param("page", "0").param("size", "10"))
+        mockMvc.perform(
+                        get("/admin/events")
+                                .param("city", "Bogota")
+                )
                 .andExpect(status().isOk());
+
+        verify(service)
+                .searchByCity(
+                        "Bogota",
+                        0
+                );
     }
 
     @Test
-    void testShowEventsContainsPaginationAttributes() throws Exception {
-        mockMvc.perform(get("/admin/events").param("page", "1").param("size", "5"))
-                .andExpect(model().attribute("page", 1))
-                .andExpect(model().attribute("size", 5));
+    @DisplayName("Debe buscar solo por categoría")
+    void shouldSearchByCategory() throws Exception {
+
+        when(service.searchByCategory(
+                "Tech",
+                0
+        )).thenReturn(buildSlice());
+
+        mockMvc.perform(
+                        get("/admin/events")
+                                .param("category", "Tech")
+                )
+                .andExpect(status().isOk());
+
+        verify(service)
+                .searchByCategory(
+                        "Tech",
+                        0
+                );
     }
 
     @Test
-    void testShowEventsModelContainsAllRequiredAttributes() throws Exception {
-        mockMvc.perform(get("/admin/events"))
-                .andExpect(model().attributeExists("eventForm", "events", "venues", "page", "size"));
+    @DisplayName("Debe buscar por rango de fechas")
+    void shouldSearchByDateRange() throws Exception {
+
+        when(service.searchByDateRange(
+                "2026-01-01",
+                "2026-02-01",
+                0
+        )).thenReturn(buildSlice());
+
+        mockMvc.perform(
+                        get("/admin/events")
+                                .param("startDate", "2026-01-01")
+                                .param("endDate", "2026-02-01")
+                )
+                .andExpect(status().isOk());
+
+        verify(service)
+                .searchByDateRange(
+                        "2026-01-01",
+                        "2026-02-01",
+                        0
+                );
     }
 
     @Test
-    void testSaveEventRedirectsAfterSuccessfulSubmit() throws Exception {
-        Mockito.when(venueService.getById(Mockito.anyLong())).thenReturn(java.util.Optional.of(new Venue()));
-        Mockito.when(categoryService.findAllByIds(Mockito.anyList())).thenReturn(new ArrayList<>());
-        Mockito.when(eventService.saveEvent(Mockito.any(Event.class))).thenReturn(new Event());
+    @DisplayName("Debe redireccionar cuando el formulario es válido")
+    void shouldRedirectWhenFormIsValid() throws Exception {
 
-        mockMvc.perform(post("/admin/events/save")
-                .param("eventName", "Test Event")
-                .param("eventDate", "2026-06-01")
-                .param("venueId", "1")
-                .param("categoryIds", "1"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/events"));
+        when(service.getAll(anyInt()))
+                .thenReturn(
+                        new SliceImpl<>(List.of())
+                );
+
+        when(venueService.findAllVenues())
+                .thenReturn(List.of());
+
+        when(categoryService.findAllCategories())
+                .thenReturn(List.of());
+
+        mockMvc.perform(
+                        post("/admin/events/save")
+
+                                .param(
+                                        "name",
+                                        "Evento prueba"
+                                )
+
+                                .param(
+                                        "date",
+                                        LocalDate.now().toString()
+                                )
+
+                                .param(
+                                        "Description",
+                                        "Descripcion"
+                                )
+
+                                .param(
+                                        "venueId",
+                                        "1"
+                                )
+
+                                .param(
+                                        "categoriesId",
+                                        "1"
+                                )
+                )
+
+                .andExpect(
+                        status()
+                                .is3xxRedirection()
+                )
+
+                .andExpect(
+                        redirectedUrl(
+                                "/admin/events"
+                        ));
     }
 
+    @Test
+    @DisplayName("Debe retornar la vista cuando hay errores")
+    void shouldReturnViewWhenValidationFails() throws Exception {
+
+        when(service.getAll(anyInt()))
+                .thenReturn(buildSlice());
+
+        mockMvc.perform(
+                        post("/admin/events/save")
+                )
+                .andExpect(status().isOk())
+                .andExpect(view().name("events"))
+                .andExpect(model().attributeExists("events"))
+                .andExpect(model().attributeExists("venues"))
+                .andExpect(model().attributeExists("categories"))
+                .andExpect(model().attributeExists("cities"));
+    }
 }
