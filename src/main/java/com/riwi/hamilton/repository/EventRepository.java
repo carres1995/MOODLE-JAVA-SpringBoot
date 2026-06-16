@@ -9,11 +9,14 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event,Long> {
     List<Event> findByNameContaining(String name);
+
+    boolean existsByName(String name);
 
     @EntityGraph(attributePaths = {"venue", "categories"})
     Page<Event> findAllBy(Pageable pageable);
@@ -25,7 +28,7 @@ public interface EventRepository extends JpaRepository<Event,Long> {
     Slice<Event> findByCategories_NameContainingIgnoreCase(String categoryName, Pageable pageable);
 
     @EntityGraph(attributePaths = {"venue", "categories"})
-    Slice<Event> findByDateBetweenOrderByDateDesc(String startDate, String endDate, Pageable pageable);
+    Slice<Event> findByDateBetweenOrderByDateDesc(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     @EntityGraph(attributePaths = {"venue", "categories"})
     Slice<Event> findByVenue_CityInAndCategories_NameContainingIgnoreCase(List<Cities> cities, String categoryName, Pageable pageable);

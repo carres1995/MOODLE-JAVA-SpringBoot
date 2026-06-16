@@ -40,6 +40,8 @@ form {
     box-shadow: 0 10px 30px rgba(34, 60, 80, 0.08);
     padding: 24px;
     margin-bottom: 24px;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 form div {

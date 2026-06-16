@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
 
@@ -19,6 +20,7 @@ import java.util.Set;
 @Entity
 @SoftDelete(strategy = SoftDeleteType.ACTIVE,columnName = "available")
 @Table(name = "categories")
+@SQLRestriction("available = true")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
